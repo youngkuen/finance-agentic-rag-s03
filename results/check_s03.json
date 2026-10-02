@@ -1,6 +1,6 @@
 {
  "session": 3,
- "generated_at": "2026-10-02T08:30:42+00:00",
+ "generated_at": "2026-10-02T12:55:32+00:00",
  "passed": 6,
  "total": 6,
  "checks": {
@@ -26,7 +26,7 @@
   },
   "ADR-002": {
    "ok": true,
-   "detail": "3,598자"
+   "detail": "2,291자"
   }
  }
 }
