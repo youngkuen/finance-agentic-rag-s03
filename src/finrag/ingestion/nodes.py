@@ -82,10 +82,22 @@ def parse(state: IngestState) -> IngestState:
 
 def gate(state: IngestState) -> IngestState:
     """검증 게이트. 여기서 통과 / 재추출 / OCR / 실패가 갈린다."""
-    # ── TODO: 여기를 채우세요 ──────────────────────────────
-    # parse 가 뽑은 페이지를 검증 게이트에 넣고 그 판정을 state["route"] 로 돌려준다.
-    # 지원하지 않는 형식(office/missing)은 게이트를 거치지 않고 바로 fail 이다.
-    raise NotImplementedError("TODO: gate 를 구현하세요")
+    route = state["route"]
+
+    # 지원하지 않는 형식은 검사기에 넣지 않는다. 넣어 봐야 "글자 0자"라는 같은 답만
+    # 나오고, 사람 검토 큐에서 "형식 때문에 못 읽음"과 "글자가 깨짐"이 뒤섞인다.
+    if route in ("office", "missing"):
+        rep = DocReport(doc_id=state["doc_id"], parser=state.get("parser", ""),
+                        verdict="fail", reasons=[f"지원하지 않는 형식({route})"],
+                        pages=[], usable_pages=0)
+        return {"report": rep.to_dict(), "route": "fail"}
+
+    # PDF 만 페이지 객체를 같이 넘긴다. 이미지가 있는 쪽을 알아야 OCR 판정이 선다.
+    path = Path(state["path"])
+    page_objs = page_objects(path) if route == "pdf" else []
+    ex = Extraction(state["doc_id"], state.get("parser", ""), state.get("pages", []))
+    rep = validate(ex, page_objs)
+    return {"report": rep.to_dict(), "route": rep.verdict}
 
 
 def reparse(state: IngestState) -> IngestState:

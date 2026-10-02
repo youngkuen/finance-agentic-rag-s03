@@ -1,0 +1,32 @@
+{
+ "session": 3,
+ "generated_at": "2026-10-02T08:30:42+00:00",
+ "passed": 6,
+ "total": 6,
+ "checks": {
+  "인제스천 전체 처리": {
+   "ok": true,
+   "detail": "문서 49/51건 · 경로 합 49 · {'done': 46, 'failed': 3}"
+  },
+  "게이트 3분기 동작": {
+   "ok": true,
+   "detail": "{'reparse': 5, 'fail': 2, 'pass': 40, 'ocr': 2}"
+  },
+  "Qdrant 포인트": {
+   "ok": true,
+   "detail": "3,695개 (직접 조회)"
+  },
+  "baseline Recall@5": {
+   "ok": true,
+   "detail": "0.775 (MRR 0.5548)"
+  },
+  "유형별 분해": {
+   "ok": true,
+   "detail": "8개 유형"
+  },
+  "ADR-002": {
+   "ok": true,
+   "detail": "3,598자"
+  }
+ }
+}

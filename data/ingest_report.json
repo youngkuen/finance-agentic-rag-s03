@@ -1,0 +1,58 @@
+{
+ "generated_at": "2026-10-02T08:28:18+00:00",
+ "documents": 49,
+ "chunks": 3695,
+ "routes": {
+  "done": 46,
+  "failed": 3
+ },
+ "parsers": {
+  "pdfplumber": 29,
+  "none": 2,
+  "xml": 2,
+  "html": 14,
+  "text": 1,
+  "pymupdf": 1
+ },
+ "verdicts": {
+  "reparse": 5,
+  "fail": 2,
+  "pass": 40,
+  "ocr": 2
+ },
+ "llm_repaired": [],
+ "synthetic_degraded": [],
+ "failed": [
+  {
+   "doc_id": "law_silson_std_hwp",
+   "reasons": [
+    "지원하지 않는 형식(office)"
+   ],
+   "warnings": [
+    "지원하지 않는 형식(office)"
+   ]
+  },
+  {
+   "doc_id": "knia_4000",
+   "reasons": [
+    "재추출 필요 1쪽",
+    "쓸 수 있는 페이지가 없음"
+   ],
+   "warnings": [
+    "LLM 키가 없어 복구를 건너뜀",
+    "재추출 필요 1쪽",
+    "쓸 수 있는 페이지가 없음"
+   ]
+  },
+  {
+   "doc_id": "fss_deposit_terms_2022_hwpx",
+   "reasons": [
+    "지원하지 않는 형식(office)"
+   ],
+   "warnings": [
+    "지원하지 않는 형식(office)"
+   ]
+  }
+ ],
+ "skipped_by_checkpoint": 0
+}

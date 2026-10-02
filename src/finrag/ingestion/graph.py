@@ -25,21 +25,31 @@ def build_ingest_graph(checkpointer=None):
     for name in ("classify", "parse", "gate", "reparse", "ocr", "llm_repair", "chunk", "dead_letter"):
         g.add_node(name, getattr(N, name))
 
-    # ── 실습 3: 여기를 채우세요 ──────────────────────────────
-    # 노드 8개는 위에서 등록했다. 엣지만 연결하면 된다.
-    #   classify → parse → gate ─┬ pass    → chunk → END
-    #                            ├ reparse → reparse ─┬ pass   → chunk
-    #                            │                    ├ ocr    → ocr
-    #                            │                    └ repair → llm_repair
-    #                            ├ ocr     → ocr ─────┬ chunk  → chunk
-    #                            │                    └ fail   → dead_letter
-    #                            └ fail    → dead_letter → END
-    #   llm_repair 다음은 lambda s: s["route"] 로 chunk / dead_letter
-    # 시작점    : g.set_entry_point("classify")
-    # 보통 엣지 : g.add_edge(출발, 도착)
-    # 조건부 엣지: g.add_conditional_edges(출발, 라우터, {라우터가 돌려주는 값: 도착})
-    # 라우터는 nodes.py 맨 아래의 route_after_gate · route_after_reparse · route_after_ocr
-    raise NotImplementedError("실습 3: build_ingest_graph 의 엣지를 연결하세요 (이 줄은 지운다)")
+    g.set_entry_point("classify")
+    g.add_edge("classify", "parse")
+    g.add_edge("parse", "gate")
+
+    # 게이트 판정이 네 갈래로 갈린다. pass 만 바로 청킹으로 간다.
+    g.add_conditional_edges("gate", N.route_after_gate, {
+        "pass": "chunk", "reparse": "reparse", "ocr": "ocr", "fail": "dead_letter",
+    })
+
+    # 다른 파서로 다시 뽑은 뒤에도 쓸 페이지가 하나도 없으면 LLM 복구가 마지막 수단이다.
+    g.add_conditional_edges("reparse", N.route_after_reparse, {
+        "pass": "chunk", "ocr": "ocr", "repair": "llm_repair",
+    })
+
+    # OCR 캐시에서 건진 페이지나 멀쩡한 본문이 있으면 색인하고, 없으면 사람 검토 큐로.
+    g.add_conditional_edges("ocr", N.route_after_ocr, {
+        "chunk": "chunk", "fail": "dead_letter",
+    })
+
+    g.add_conditional_edges("llm_repair", lambda s: s["route"], {
+        "chunk": "chunk", "fail": "dead_letter",
+    })
+
+    g.add_edge("chunk", END)
+    g.add_edge("dead_letter", END)
 
     return g.compile(checkpointer=checkpointer)
 
